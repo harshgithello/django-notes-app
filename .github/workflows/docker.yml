@@ -1,0 +1,55 @@
+name: Docker CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: mynotes/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: mynotes
+        run: npm ci
+
+      - name: Build React frontend
+        working-directory: mynotes
+        run: npm run build
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: false
+          tags: hardocccckr/django-notes-app:latest
+
+      - name: Docker Scout
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          image: hardocccckr/django-notes-app:latest
+
+      - name: Push Docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: hardocccckr/django-notes-app:latest
