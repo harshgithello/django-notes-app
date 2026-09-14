@@ -5,8 +5,14 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   docker:
+    # Prevent the history commit from triggering the pipeline again
+    if: "!contains(github.event.head_commit.message, 'Update Scout history')"
+
     runs-on: ubuntu-latest
 
     steps:
@@ -47,9 +53,33 @@ jobs:
           command: cves
           image: hardocccckr/django-notes-app:latest
 
+      - name: Save Scout history
+        run: |
+          echo "===============================" | tee -a security/scout-history.txt
+          echo "SCOUT CHECK" | tee -a security/scout-history.txt
+          echo "Date: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" | tee -a security/scout-history.txt
+          echo "Image: hardocccckr/django-notes-app:latest" | tee -a security/scout-history.txt
+          echo "===============================" | tee -a security/scout-history.txt
+          docker scout cves hardocccckr/django-notes-app:latest 2>&1 | tee -a security/scout-history.txt
+          echo "" | tee -a security/scout-history.txt
+
       - name: Push Docker image
         uses: docker/build-push-action@v7
         with:
           context: .
           push: true
           tags: hardocccckr/django-notes-app:latest
+
+      - name: Commit Scout history
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add security/scout-history.txt
+
+          if git diff --cached --quiet; then
+            echo "No Scout history changes to commit."
+          else
+            git commit -m "Update Scout history"
+            git push
+          fi
