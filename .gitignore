@@ -1,0 +1,33 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+
+# Django generated files
+staticfiles/
+*.sqlite3
+*.log
+
+# React / Node
+node_modules/
+mynotes/node_modules/
+build/
+mynotes/build/
+coverage/
+
+# Local data
+data/
+
+# Editors / OS
+.vscode/
+.DS_Store
+
+# npm logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

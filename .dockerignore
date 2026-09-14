@@ -1,0 +1,13 @@
+.git
+.github
+.env
+node_modules
+mynotes/node_modules
+data
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+staticfiles
+*.sqlite3
+*.log
