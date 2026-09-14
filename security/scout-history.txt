@@ -1,0 +1,9 @@
+===============================
+SCOUT CHECK
+Date: 2026-09-14 19:32:15 UTC
+Image: hardocccckr/django-notes-app:latest
+===============================
+docker: unknown command: docker scout
+
+Run 'docker --help' for more information
+
